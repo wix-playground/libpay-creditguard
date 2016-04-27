@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.wix.pay</groupId>
+    <artifactId>libpay-creditguard-all</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>libpay module for CreditGuard payment gateway</name>
+    <description>libpay module for CreditGuard payment gateway</description>
+	
+    <parent>
+        <groupId>com.wix.pay</groupId>
+        <artifactId>libpay-creditguard-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+		<relativePath>libpay-creditguard-parent</relativePath>
+    </parent>
+
+    <modules>
+        <module>libpay-creditguard-parent</module>
+        <module>libpay-creditguard</module>
+        <module>libpay-creditguard-common</module>
+        <module>libpay-creditguard-testkit</module>
+    </modules>
+	
+    <scm>
+        <url>https://github.com/wix/libpay-creditguard</url>
+        <connection>scm:git:git://github.com/wix/libpay-creditguard.git</connection>
+        <developerConnection>scm:git:git@github.com:wix/libpay-creditguard.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+</project>
