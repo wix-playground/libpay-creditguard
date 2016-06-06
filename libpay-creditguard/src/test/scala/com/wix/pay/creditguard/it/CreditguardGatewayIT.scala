@@ -60,19 +60,6 @@ class CreditguardGatewayIT extends SpecWithJUnit {
     val authorizationKey = authorizationParser.stringify(someAuthorization)
     val someCaptureAmount = 11.1
 
-    def anInvalidMerchantResponse(errorMessage: String): AshraitResponse = {
-      val doDeal = new DoDealResponse
-      doDeal.status = "405"
-      doDeal.statusText = errorMessage
-
-      val response = new Response
-      response.doDeal = doDeal
-
-      val ashrait = new AshraitResponse
-      ashrait.response = response
-      ashrait
-    }
-
     def aPaymentRejectedResponse(errorMessage: String): AshraitResponse = {
       val doDeal = new DoDealResponse
       doDeal.status = StatusCodes.rejected
@@ -125,7 +112,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         orderId = Some(someDeal.id),
         card = someCreditCard,
         currencyAmount = someCurrencyAmount
-      ) returns anInvalidMerchantResponse(someErrorMessage)
+      ) failsOnInvalidMerchant(someErrorMessage)
 
       creditguard.sale(
         merchantKey = merchantKey,
@@ -195,7 +182,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         orderId = Some(someDeal.id),
         card = someCreditCard,
         currencyAmount = someCurrencyAmount
-      ) returns anInvalidMerchantResponse(someErrorMessage)
+      ) failsOnInvalidMerchant(someErrorMessage)
 
       creditguard.authorize(
         merchantKey = merchantKey,
@@ -274,7 +261,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         amount = someCaptureAmount,
         cardId = someAuthorization.cardId,
         cardExpiration = someAuthorization.cardExpiration
-      ) returns anInvalidMerchantResponse(someErrorMessage)
+      ) failsOnInvalidMerchant(someErrorMessage)
 
       creditguard.capture(
         merchantKey = merchantKey,
