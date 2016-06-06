@@ -127,7 +127,7 @@ public class DoDealRequest {
     /**
      * Field for any text (optional). This is returned in response as is.
      * Typically used for merchant unique identifier.
-     * It is recommended toenter your unique identifier for the transaction in the merchant’s system.
+     * It is recommended to enter your unique identifier for the transaction in the merchant’s system.
      */
     @XmlElement
     public String user;
