@@ -4,8 +4,10 @@ import java.util.{List => JList}
 
 import com.google.api.client.http.UrlEncodedParser
 import com.wix.hoopoe.http.testkit.EmbeddedHttpProbe
+import com.wix.pay.creditcard.CreditCard
 import com.wix.pay.creditguard.model._
-import com.wix.pay.creditguard.{RequestParser, ResponseParser}
+import com.wix.pay.creditguard.{CreditguardHelper, RequestParser, ResponseParser}
+import com.wix.pay.model.CurrencyAmount
 import spray.http._
 
 import scala.collection.JavaConversions._
@@ -15,19 +17,85 @@ import scala.collection.mutable
 class CreditguardDriver(port: Int) {
   private val probe = new EmbeddedHttpProbe(port, EmbeddedHttpProbe.NotFoundHandler)
 
-  def startProbe() {
+  def start() {
     probe.doStart()
   }
 
-  def stopProbe() {
+  def stop() {
     probe.doStop()
   }
 
-  def resetProbe() {
+  def reset() {
     probe.handlers.clear()
   }
 
-  def aRequestFor(user: String, password: String, request: AshraitRequest): RequestCtx = {
+  def aSaleFor(user: String,
+               password: String,
+               terminalNumber: String,
+               supplierNumber: String,
+               idPrefix: String,
+               orderId: Option[String],
+               card: CreditCard,
+               currencyAmount: CurrencyAmount): RequestCtx = {
+    val request = CreditguardHelper.createSaleRequest(
+      terminalNumber = terminalNumber,
+      supplierNumber = supplierNumber,
+      idPrefix = idPrefix,
+      orderId = orderId,
+      card = card,
+      currencyAmount = currencyAmount
+    )
+
+    new RequestCtx(
+      user = user,
+      password = password,
+      request = request
+    )
+  }
+
+  def anAuthorizeFor(user: String,
+                     password: String,
+                     terminalNumber: String,
+                     supplierNumber: String,
+                     idPrefix: String,
+                     orderId: Option[String],
+                     card: CreditCard,
+                     currencyAmount: CurrencyAmount): RequestCtx = {
+    val request = CreditguardHelper.createAuthorizeRequest(
+      terminalNumber = terminalNumber,
+      supplierNumber = supplierNumber,
+      idPrefix = idPrefix,
+      orderId = orderId,
+      card = card,
+      currencyAmount = currencyAmount
+    )
+
+    new RequestCtx(
+      user = user,
+      password = password,
+      request = request
+    )
+  }
+
+  def aCaptureFor(user: String,
+                  password: String,
+                  terminalNumber: String,
+                  supplierNumber: String,
+                  authNumber: String,
+                  currency: String,
+                  amount: Double,
+                  cardId: String,
+                  cardExpiration: String): RequestCtx = {
+    val request = CreditguardHelper.createCaptureRequest(
+      terminalNumber = terminalNumber,
+      supplierNumber = supplierNumber,
+      authNumber = authNumber,
+      currency = currency,
+      amount = amount,
+      cardId = cardId,
+      cardExpiration = cardExpiration
+    )
+
     new RequestCtx(
       user = user,
       password = password,

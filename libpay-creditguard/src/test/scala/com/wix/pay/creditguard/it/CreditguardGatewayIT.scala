@@ -20,7 +20,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
   val requestFactory = new NetHttpTransport().createRequestFactory()
   val driver = new CreditguardDriver(port = creditguardPort)
   step {
-    driver.startProbe()
+    driver.start()
   }
 
   sequential
@@ -50,8 +50,6 @@ class CreditguardGatewayIT extends SpecWithJUnit {
 
     val someDeal = Deal(id = "some deal ID")
 
-    private val helper = new CreditguardHelper
-
     val someAuthorization = CreditguardAuthorization(
       authNumber = "someAuthorizationNumber",
       currency = "someCurrency",
@@ -61,40 +59,6 @@ class CreditguardGatewayIT extends SpecWithJUnit {
     )
     val authorizationKey = authorizationParser.stringify(someAuthorization)
     val someCaptureAmount = 11.1
-
-    def aSaleRequest(): AshraitRequest = {
-      helper.createSaleRequest(
-        terminalNumber = someMerchant.terminalNumber,
-        supplierNumber = someMerchant.supplierNumber,
-        idPrefix = someMerchant.idPrefix,
-        orderId = Some(someDeal.id),
-        card = someCreditCard,
-        currencyAmount = someCurrencyAmount
-      )
-    }
-
-    def anAuthorizeRequest(): AshraitRequest = {
-      helper.createAuthorizeRequest(
-        terminalNumber = someMerchant.terminalNumber,
-        supplierNumber = someMerchant.supplierNumber,
-        idPrefix = someMerchant.idPrefix,
-        orderId = Some(someDeal.id),
-        card = someCreditCard,
-        currencyAmount = someCurrencyAmount
-      )
-    }
-
-    def aCaptureRequest(): AshraitRequest = {
-      helper.createCaptureRequest(
-        terminalNumber = someMerchant.terminalNumber,
-        supplierNumber = someMerchant.supplierNumber,
-        authNumber = someAuthorization.authNumber,
-        currency = someAuthorization.currency,
-        amount = someCaptureAmount,
-        cardId = someAuthorization.cardId,
-        cardExpiration = someAuthorization.cardExpiration
-      )
-    }
 
     def anInvalidMerchantResponse(errorMessage: String): AshraitResponse = {
       val doDeal = new DoDealResponse
@@ -146,16 +110,21 @@ class CreditguardGatewayIT extends SpecWithJUnit {
       authorizationParser = authorizationParser
     )
 
-    driver.resetProbe()
+    driver.reset()
   }
 
   "sale request via CreditGuard gateway" should {
     "gracefully fail on invalid merchant" in new Ctx {
       val someErrorMessage = "some error message"
-      driver.aRequestFor(
+      driver.aSaleFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = aSaleRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
+        orderId = Some(someDeal.id),
+        card = someCreditCard,
+        currencyAmount = someCurrencyAmount
       ) returns anInvalidMerchantResponse(someErrorMessage)
 
       creditguard.sale(
@@ -170,10 +139,15 @@ class CreditguardGatewayIT extends SpecWithJUnit {
 
     "gracefully fail on rejected card" in new Ctx {
       val someErrorMessage = "some error message"
-      driver.aRequestFor(
+      driver.aSaleFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = aSaleRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
+        orderId = Some(someDeal.id),
+        card = someCreditCard,
+        currencyAmount = someCurrencyAmount
       ) returns aPaymentRejectedResponse(someErrorMessage)
 
       creditguard.sale(
@@ -187,10 +161,15 @@ class CreditguardGatewayIT extends SpecWithJUnit {
     }
 
     "successfully yield a transaction ID on valid request" in new Ctx {
-      driver.aRequestFor(
+      driver.aSaleFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = aSaleRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
+        orderId = Some(someDeal.id),
+        card = someCreditCard,
+        currencyAmount = someCurrencyAmount
       ) returns aSuccessfulResponse()
 
       creditguard.sale(
@@ -207,10 +186,15 @@ class CreditguardGatewayIT extends SpecWithJUnit {
   "authorize request via CreditGuard gateway" should {
     "gracefully fail on invalid merchant" in new Ctx {
       val someErrorMessage = "some error message"
-      driver.aRequestFor(
+      driver.anAuthorizeFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = anAuthorizeRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
+        orderId = Some(someDeal.id),
+        card = someCreditCard,
+        currencyAmount = someCurrencyAmount
       ) returns anInvalidMerchantResponse(someErrorMessage)
 
       creditguard.authorize(
@@ -225,10 +209,15 @@ class CreditguardGatewayIT extends SpecWithJUnit {
 
     "gracefully fail on rejected card" in new Ctx {
       val someErrorMessage = "some error message"
-      driver.aRequestFor(
+      driver.anAuthorizeFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = anAuthorizeRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
+        orderId = Some(someDeal.id),
+        card = someCreditCard,
+        currencyAmount = someCurrencyAmount
       ) returns aPaymentRejectedResponse(someErrorMessage)
 
       creditguard.authorize(
@@ -242,10 +231,15 @@ class CreditguardGatewayIT extends SpecWithJUnit {
     }
 
     "successfully yield an authorization key on valid request" in new Ctx {
-      driver.aRequestFor(
+      driver.anAuthorizeFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = anAuthorizeRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
+        orderId = Some(someDeal.id),
+        card = someCreditCard,
+        currencyAmount = someCurrencyAmount
       ) returns aSuccessfulResponse()
 
       creditguard.authorize(
@@ -270,10 +264,16 @@ class CreditguardGatewayIT extends SpecWithJUnit {
   "capture request via CreditGuard gateway" should {
     "gracefully fail on invalid merchant" in new Ctx {
       val someErrorMessage = "some error message"
-      driver.aRequestFor(
+      driver.aCaptureFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = aCaptureRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        authNumber = someAuthorization.authNumber,
+        currency = someAuthorization.currency,
+        amount = someCaptureAmount,
+        cardId = someAuthorization.cardId,
+        cardExpiration = someAuthorization.cardExpiration
       ) returns anInvalidMerchantResponse(someErrorMessage)
 
       creditguard.capture(
@@ -286,10 +286,16 @@ class CreditguardGatewayIT extends SpecWithJUnit {
     }
 
     "successfully yield a transaction ID on valid request" in new Ctx {
-      driver.aRequestFor(
+      driver.aCaptureFor(
         user = someMerchant.user,
         password = someMerchant.password,
-        request = aCaptureRequest()
+        terminalNumber = someMerchant.terminalNumber,
+        supplierNumber = someMerchant.supplierNumber,
+        authNumber = someAuthorization.authNumber,
+        currency = someAuthorization.currency,
+        amount = someCaptureAmount,
+        cardId = someAuthorization.cardId,
+        cardExpiration = someAuthorization.cardExpiration
       ) returns aSuccessfulResponse()
 
       creditguard.capture(
@@ -303,6 +309,6 @@ class CreditguardGatewayIT extends SpecWithJUnit {
   }
 
   step {
-    driver.stopProbe()
+    driver.stop()
   }
 }

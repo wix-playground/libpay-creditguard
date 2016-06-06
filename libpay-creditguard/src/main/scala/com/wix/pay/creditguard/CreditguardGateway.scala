@@ -24,13 +24,11 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
                          endpointUrl: String = Endpoints.caspitProduction,
                          merchantParser: CreditguardMerchantParser = new JsonCreditguardMerchantParser,
                          authorizationParser: CreditguardAuthorizationParser = new JsonCreditguardAuthorizationParser) extends PaymentGateway {
-  private val helper = new CreditguardHelper
-
   override def authorize(merchantKey: String, creditCard: CreditCard, currencyAmount: CurrencyAmount, customer: Option[Customer], deal: Option[Deal]): Try[String] = {
     Try {
       val merchant = merchantParser.parse(merchantKey)
 
-      val request = helper.createAuthorizeRequest(
+      val request = CreditguardHelper.createAuthorizeRequest(
         terminalNumber = merchant.terminalNumber,
         supplierNumber = merchant.supplierNumber,
         idPrefix = merchant.idPrefix,
@@ -71,7 +69,7 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
       val merchant = merchantParser.parse(merchantKey)
       val authorization = authorizationParser.parse(authorizationKey)
 
-      val request = helper.createCaptureRequest(
+      val request = CreditguardHelper.createCaptureRequest(
         terminalNumber = merchant.terminalNumber,
         supplierNumber = merchant.supplierNumber,
         cardId = authorization.cardId,
@@ -105,7 +103,7 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
     Try {
       val merchant = merchantParser.parse(merchantKey)
 
-      val request = helper.createSaleRequest(
+      val request = CreditguardHelper.createSaleRequest(
         terminalNumber = merchant.terminalNumber,
         supplierNumber = merchant.supplierNumber,
         idPrefix = merchant.idPrefix,
