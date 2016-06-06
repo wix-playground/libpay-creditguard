@@ -126,10 +126,6 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         card = someCreditCard,
         currencyAmount = someCurrencyAmount
       ) returns(
-        authNumber = someAuthorization.authNumber,
-        cardId = someAuthorization.cardId,
-        cardExpiration = someAuthorization.cardExpiration,
-        currency = someAuthorization.currency,
         transactionId = someAuthorization.tranId
       )
 
@@ -264,10 +260,6 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         cardId = someAuthorization.cardId,
         cardExpiration = someAuthorization.cardExpiration
       ) returns(
-        authNumber = someAuthorization.authNumber,
-        cardId = someAuthorization.cardId,
-        cardExpiration = someAuthorization.cardExpiration,
-        currency = someAuthorization.currency,
         transactionId = someAuthorization.tranId
       )
 

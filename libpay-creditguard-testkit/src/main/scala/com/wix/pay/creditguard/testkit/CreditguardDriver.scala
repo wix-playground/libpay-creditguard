@@ -105,6 +105,20 @@ class CreditguardDriver(port: Int) {
   }
 
   class RequestCtx(user: String, password: String, request: AshraitRequest) {
+    def returns(transactionId: String): Unit = {
+      val doDeal = new DoDealResponse
+      doDeal.status = StatusCodes.success
+
+      val response = new Response
+      response.doDeal = doDeal
+      response.tranId = transactionId
+
+      val ashrait = new AshraitResponse
+      ashrait.response = response
+
+      returns(ashrait)
+    }
+
     def returns(authNumber: String,
                 cardId: String,
                 cardExpiration: String,
