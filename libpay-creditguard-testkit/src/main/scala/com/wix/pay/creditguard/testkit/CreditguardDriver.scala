@@ -8,7 +8,8 @@ import com.wix.pay.creditcard.CreditCard
 import com.wix.pay.creditguard.model._
 import com.wix.pay.creditguard.{CreditguardHelper, RequestParser, ResponseParser}
 import com.wix.pay.model.CurrencyAmount
-import spray.http._
+import com.wix.pay.shva.model.StatusCodes
+import spray.http.{StatusCodes => HttpStatusCodes, _}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -118,6 +119,20 @@ class CreditguardDriver(port: Int) {
       returns(ashrait)
     }
 
+    def isRejected(errorMessage: String): Unit = {
+      val doDeal = new DoDealResponse
+      doDeal.status = StatusCodes.rejected
+      doDeal.statusText = errorMessage
+
+      val response = new Response
+      response.doDeal = doDeal
+
+      val ashrait = new AshraitResponse
+      ashrait.response = response
+
+      returns(ashrait)
+    }
+
     def returns(response: AshraitResponse): Unit = {
       val responseXml = ResponseParser.stringify(response)
 
@@ -129,7 +144,7 @@ class CreditguardDriver(port: Int) {
         entity,
         _) if isStubbedRequestEntity(entity) =>
           HttpResponse(
-            status = StatusCodes.OK,
+            status = HttpStatusCodes.OK,
             entity = HttpEntity(ContentType(MediaTypes.`application/xml`, HttpCharsets.`UTF-8`), responseXml))
       }
     }
