@@ -5,7 +5,7 @@ import javax.xml.bind.{JAXBContext, Marshaller}
 
 import com.wix.pay.creditguard.model.AshraitRequest
 
-class RequestParser {
+object RequestParser {
   def stringify(obj: AshraitRequest): String = {
     val context = JAXBContext.newInstance(classOf[AshraitRequest])
     val marshaller = context.createMarshaller

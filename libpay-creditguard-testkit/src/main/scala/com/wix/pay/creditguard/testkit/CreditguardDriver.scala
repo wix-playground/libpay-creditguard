@@ -14,8 +14,6 @@ import scala.collection.mutable
 
 class CreditguardDriver(port: Int) {
   private val probe = new EmbeddedHttpProbe(port, EmbeddedHttpProbe.NotFoundHandler)
-  private val requestParser = new RequestParser
-  private val responseParser = new ResponseParser
 
   def startProbe() {
     probe.doStart()
@@ -39,7 +37,7 @@ class CreditguardDriver(port: Int) {
 
   class RequestCtx(user: String, password: String, request: AshraitRequest) {
     def returns(response: AshraitResponse): Unit = {
-      val responseXml = responseParser.stringify(response)
+      val responseXml = ResponseParser.stringify(response)
 
       probe.handlers += {
         case HttpRequest(
@@ -59,7 +57,7 @@ class CreditguardDriver(port: Int) {
 
       requestParams.get(Fields.user).contains(user) &&
         requestParams.get(Fields.password).contains(password) &&
-        requestParams.get(Fields.int_in).map {requestParser.parse}.contains(request)
+        requestParams.get(Fields.int_in).map { RequestParser.parse }.contains(request)
     }
 
     private def urlDecode(str: String): Map[String, String] = {

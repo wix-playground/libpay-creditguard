@@ -7,6 +7,7 @@ import com.wix.pay.model.CurrencyAmount
 class CreditguardHelper {
   def createAuthorizeRequest(terminalNumber: String,
                              supplierNumber: String,
+                             idPrefix: String,
                              orderId: Option[String] = None,
                              card: CreditCard,
                              currencyAmount: CurrencyAmount): AshraitRequest = {
@@ -14,6 +15,7 @@ class CreditguardHelper {
       validation = Validations.verify,
       terminalNumber = terminalNumber,
       supplierNumber = supplierNumber,
+      idPrefix = idPrefix,
       orderId = orderId,
       card = card,
       currencyAmount = currencyAmount
@@ -54,6 +56,7 @@ class CreditguardHelper {
 
   def createSaleRequest(terminalNumber: String,
                         supplierNumber: String,
+                        idPrefix: String,
                         orderId: Option[String] = None,
                         card: CreditCard,
                         currencyAmount: CurrencyAmount): AshraitRequest = {
@@ -61,6 +64,7 @@ class CreditguardHelper {
       validation = Validations.autoComm,
       terminalNumber = terminalNumber,
       supplierNumber = supplierNumber,
+      idPrefix = idPrefix,
       orderId = orderId,
       card = card,
       currencyAmount = currencyAmount
@@ -70,6 +74,7 @@ class CreditguardHelper {
   def createAuthorizeOrSaleRequest(validation: String,
                                    terminalNumber: String,
                                    supplierNumber: String,
+                                   idPrefix: String,
                                    orderId: Option[String] = None,
                                    card: CreditCard,
                                    currencyAmount: CurrencyAmount): AshraitRequest = {
@@ -88,7 +93,7 @@ class CreditguardHelper {
     doDeal.transactionType = RequestTransactionTypes.debit
     doDeal.total = Conversions.toCreditguardAmount(currencyAmount.amount)
     doDeal.validation = validation
-    doDeal.user = orderId.orNull
+    doDeal.user = s"$idPrefix${orderId.getOrElse("")}".substring(0, 19)
     doDeal.supplierNumber = supplierNumber
 
     val request = new Request

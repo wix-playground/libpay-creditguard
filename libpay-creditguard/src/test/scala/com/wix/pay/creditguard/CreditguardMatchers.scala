@@ -8,11 +8,13 @@ trait CreditguardMatchers extends Matchers {
   def beMerchant(user: Matcher[String] = AlwaysMatcher(),
                  password: Matcher[String] = AlwaysMatcher(),
                  terminalNumber: Matcher[String] = AlwaysMatcher(),
-                 supplierNumber: Matcher[String] = AlwaysMatcher()): Matcher[CreditguardMerchant] = {
+                 supplierNumber: Matcher[String] = AlwaysMatcher(),
+                 idPrefix: Matcher[String] = AlwaysMatcher()): Matcher[CreditguardMerchant] = {
     user ^^ { (_: CreditguardMerchant).user aka "user" } and
       password ^^ { (_: CreditguardMerchant).password aka "password" } and
       terminalNumber ^^ { (_: CreditguardMerchant).terminalNumber aka "terminal number" } and
-      supplierNumber ^^ { (_: CreditguardMerchant).supplierNumber aka "supplier number" }
+      supplierNumber ^^ { (_: CreditguardMerchant).supplierNumber aka "supplier number" } and
+      idPrefix ^^ { (_: CreditguardMerchant).idPrefix aka "ID prefix" }
   }
 
   def beAuthorization(authNumber: Matcher[String] = AlwaysMatcher(),

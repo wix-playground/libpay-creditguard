@@ -18,14 +18,17 @@ class JsonCreditguardMerchantParserTest extends SpecWithJUnit {
         user = "some user",
         password = "some password",
         terminalNumber = "some terminal number",
-        supplierNumber = "some supplier number"
+        supplierNumber = "some supplier number",
+        idPrefix = "some ID prefix"
       )
 
       val merchantKey = merchantParser.stringify(someMerchant)
       merchantParser.parse(merchantKey) must beMerchant(
         user = ===(someMerchant.user),
         password = === (someMerchant.password),
-        terminalNumber = ===(someMerchant.terminalNumber)
+        terminalNumber = ===(someMerchant.terminalNumber),
+        supplierNumber = ===(someMerchant.supplierNumber),
+        idPrefix = ===(someMerchant.idPrefix)
       )
     }
   }

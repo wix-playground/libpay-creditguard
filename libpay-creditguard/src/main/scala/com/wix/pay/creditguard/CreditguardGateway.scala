@@ -25,8 +25,6 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
                          merchantParser: CreditguardMerchantParser = new JsonCreditguardMerchantParser,
                          authorizationParser: CreditguardAuthorizationParser = new JsonCreditguardAuthorizationParser) extends PaymentGateway {
   private val helper = new CreditguardHelper
-  private val requestParser = new RequestParser
-  private val responseParser = new ResponseParser
 
   override def authorize(merchantKey: String, creditCard: CreditCard, currencyAmount: CurrencyAmount, customer: Option[Customer], deal: Option[Deal]): Try[String] = {
     Try {
@@ -35,18 +33,19 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
       val request = helper.createAuthorizeRequest(
         terminalNumber = merchant.terminalNumber,
         supplierNumber = merchant.supplierNumber,
+        idPrefix = merchant.idPrefix,
         orderId = deal.map { _.id },
         card = creditCard,
         currencyAmount = currencyAmount
       )
 
-      val requestXml = requestParser.stringify(request)
+      val requestXml = RequestParser.stringify(request)
       val responseXml = doRequest(
         user = merchant.user,
         password = merchant.password,
         requestXml = requestXml
       )
-      val response = responseParser.parse(responseXml)
+      val response = ResponseParser.parse(responseXml)
       verifyShvaStatusCode(
         statusCode = response.response.doDeal.status,
         errorMessage = response.response.doDeal.statusText
@@ -82,13 +81,13 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
         amount = amount
       )
 
-      val requestXml = requestParser.stringify(request)
+      val requestXml = RequestParser.stringify(request)
       val responseXml = doRequest(
         user = merchant.user,
         password = merchant.password,
         requestXml = requestXml
       )
-      val response = responseParser.parse(responseXml)
+      val response = ResponseParser.parse(responseXml)
       verifyShvaStatusCode(
         statusCode = response.response.doDeal.status,
         errorMessage = response.response.doDeal.statusText
@@ -109,18 +108,19 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
       val request = helper.createSaleRequest(
         terminalNumber = merchant.terminalNumber,
         supplierNumber = merchant.supplierNumber,
+        idPrefix = merchant.idPrefix,
         orderId = deal.map { _.id },
         card = creditCard,
         currencyAmount = currencyAmount
       )
 
-      val requestXml = requestParser.stringify(request)
+      val requestXml = RequestParser.stringify(request)
       val responseXml = doRequest(
         user = merchant.user,
         password = merchant.password,
         requestXml = requestXml
       )
-      val response = responseParser.parse(responseXml)
+      val response = ResponseParser.parse(responseXml)
       verifyShvaStatusCode(
         statusCode = response.response.doDeal.status,
         errorMessage = response.response.doDeal.statusText

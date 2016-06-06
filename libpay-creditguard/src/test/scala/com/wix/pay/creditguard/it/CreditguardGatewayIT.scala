@@ -33,7 +33,8 @@ class CreditguardGatewayIT extends SpecWithJUnit {
       user = "some user",
       password = "some password",
       terminalNumber = "some terminal number",
-      supplierNumber = "some supplier number"
+      supplierNumber = "some supplier number",
+      idPrefix = "some ID prefix"
     )
     val merchantKey = merchantParser.stringify(someMerchant)
 
@@ -65,6 +66,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
       helper.createSaleRequest(
         terminalNumber = someMerchant.terminalNumber,
         supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
         currencyAmount = someCurrencyAmount
@@ -75,6 +77,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
       helper.createAuthorizeRequest(
         terminalNumber = someMerchant.terminalNumber,
         supplierNumber = someMerchant.supplierNumber,
+        idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
         currencyAmount = someCurrencyAmount
