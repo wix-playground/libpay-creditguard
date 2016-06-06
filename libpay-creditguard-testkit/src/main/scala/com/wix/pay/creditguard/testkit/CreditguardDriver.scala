@@ -105,6 +105,28 @@ class CreditguardDriver(port: Int) {
   }
 
   class RequestCtx(user: String, password: String, request: AshraitRequest) {
+    def returns(authNumber: String,
+                cardId: String,
+                cardExpiration: String,
+                currency: String,
+                transactionId: String): Unit = {
+      val doDeal = new DoDealResponse
+      doDeal.status = StatusCodes.success
+      doDeal.authNumber = authNumber
+      doDeal.cardId = cardId
+      doDeal.cardExpiration = cardExpiration
+      doDeal.currency = currency
+
+      val response = new Response
+      response.doDeal = doDeal
+      response.tranId = transactionId
+
+      val ashrait = new AshraitResponse
+      ashrait.response = response
+
+      returns(ashrait)
+    }
+
     def failsOnInvalidMerchant(errorMessage: String): Unit = {
       val doDeal = new DoDealResponse
       doDeal.status = "405"
@@ -133,7 +155,7 @@ class CreditguardDriver(port: Int) {
       returns(ashrait)
     }
 
-    def returns(response: AshraitResponse): Unit = {
+    private def returns(response: AshraitResponse): Unit = {
       val responseXml = ResponseParser.stringify(response)
 
       probe.handlers += {

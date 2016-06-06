@@ -4,11 +4,9 @@ package com.wix.pay.creditguard.it
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.wix.pay.creditcard.{CreditCard, CreditCardOptionalFields, YearMonth}
 import com.wix.pay.creditguard.CreditguardMatchers._
-import com.wix.pay.creditguard.model._
 import com.wix.pay.creditguard.testkit.CreditguardDriver
 import com.wix.pay.creditguard.{CreditguardAuthorization, CreditguardMerchant, _}
 import com.wix.pay.model.{CurrencyAmount, Deal}
-import com.wix.pay.shva.model.StatusCodes
 import com.wix.pay.{PaymentErrorException, PaymentGateway, PaymentRejectedException}
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
@@ -59,23 +57,6 @@ class CreditguardGatewayIT extends SpecWithJUnit {
     )
     val authorizationKey = authorizationParser.stringify(someAuthorization)
     val someCaptureAmount = 11.1
-
-    def aSuccessfulResponse(): AshraitResponse = {
-      val doDeal = new DoDealResponse
-      doDeal.status = StatusCodes.success
-      doDeal.authNumber = someAuthorization.authNumber
-      doDeal.cardId = someAuthorization.cardId
-      doDeal.cardExpiration = someAuthorization.cardExpiration
-      doDeal.currency = someAuthorization.currency
-
-      val response = new Response
-      response.doDeal = doDeal
-      response.tranId = someAuthorization.tranId
-
-      val ashrait = new AshraitResponse
-      ashrait.response = response
-      ashrait
-    }
 
     val creditguard: PaymentGateway = new CreditguardGateway(
       requestFactory = requestFactory,
@@ -144,7 +125,13 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         orderId = Some(someDeal.id),
         card = someCreditCard,
         currencyAmount = someCurrencyAmount
-      ) returns aSuccessfulResponse()
+      ) returns(
+        authNumber = someAuthorization.authNumber,
+        cardId = someAuthorization.cardId,
+        cardExpiration = someAuthorization.cardExpiration,
+        currency = someAuthorization.currency,
+        transactionId = someAuthorization.tranId
+      )
 
       creditguard.sale(
         merchantKey = merchantKey,
@@ -214,7 +201,13 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         orderId = Some(someDeal.id),
         card = someCreditCard,
         currencyAmount = someCurrencyAmount
-      ) returns aSuccessfulResponse()
+      ) returns(
+        authNumber = someAuthorization.authNumber,
+        cardId = someAuthorization.cardId,
+        cardExpiration = someAuthorization.cardExpiration,
+        currency = someAuthorization.currency,
+        transactionId = someAuthorization.tranId
+      )
 
       creditguard.authorize(
         merchantKey = merchantKey,
@@ -270,7 +263,13 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         amount = someCaptureAmount,
         cardId = someAuthorization.cardId,
         cardExpiration = someAuthorization.cardExpiration
-      ) returns aSuccessfulResponse()
+      ) returns(
+        authNumber = someAuthorization.authNumber,
+        cardId = someAuthorization.cardId,
+        cardExpiration = someAuthorization.cardExpiration,
+        currency = someAuthorization.currency,
+        transactionId = someAuthorization.tranId
+      )
 
       creditguard.capture(
         merchantKey = merchantKey,
