@@ -18,7 +18,8 @@ class JsonCreditguardAuthorizationParserTest extends SpecWithJUnit {
         currency = "some currency",
         tranId = "some transaction ID",
         cardId = "some card ID",
-        cardExpiration = "some card expiration"
+        cardExpiration = "some card expiration",
+        user = "some user"
       )
 
       val authorizationKey = authorizationParser.stringify(someAuthorization)
@@ -27,7 +28,8 @@ class JsonCreditguardAuthorizationParserTest extends SpecWithJUnit {
         currency = ===(someAuthorization.currency),
         tranId = ===(someAuthorization.tranId),
         cardId = ===(someAuthorization.cardId),
-        cardExpiration = ===(someAuthorization.cardExpiration)
+        cardExpiration = ===(someAuthorization.cardExpiration),
+        user = ===(someAuthorization.user)
       )
     }
   }

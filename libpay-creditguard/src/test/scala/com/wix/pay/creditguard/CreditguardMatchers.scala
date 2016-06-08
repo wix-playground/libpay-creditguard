@@ -21,12 +21,14 @@ trait CreditguardMatchers extends Matchers {
                       currency: Matcher[String] = AlwaysMatcher(),
                       tranId: Matcher[String] = AlwaysMatcher(),
                       cardId: Matcher[String] = AlwaysMatcher(),
-                      cardExpiration: Matcher[String] = AlwaysMatcher()): Matcher[CreditguardAuthorization] = {
+                      cardExpiration: Matcher[String] = AlwaysMatcher(),
+                      user: Matcher[String] = AlwaysMatcher()): Matcher[CreditguardAuthorization] = {
     authNumber ^^ { (_: CreditguardAuthorization).authNumber aka "authorization number" } and
       currency ^^ { (_: CreditguardAuthorization).currency aka "currency" } and
       tranId ^^ { (_: CreditguardAuthorization).tranId aka "transaction ID" } and
       cardId ^^ { (_: CreditguardAuthorization).cardId aka "card ID" } and
-      cardExpiration ^^ { (_: CreditguardAuthorization).cardExpiration aka "card expiration" }
+      cardExpiration ^^ { (_: CreditguardAuthorization).cardExpiration aka "card expiration" } and
+      user ^^ { (_: CreditguardAuthorization).user aka "user" }
   }
 
   def beAuthorizationKey(authorization: Matcher[CreditguardAuthorization]): Matcher[String] = {

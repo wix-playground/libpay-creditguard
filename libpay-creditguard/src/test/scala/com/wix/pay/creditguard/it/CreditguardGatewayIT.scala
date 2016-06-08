@@ -53,7 +53,8 @@ class CreditguardGatewayIT extends SpecWithJUnit {
       currency = "someCurrency",
       tranId = "someTransactionId",
       cardId = "someCardId",
-      cardExpiration = "someCardExpiration"
+      cardExpiration = "someCardExpiration",
+      user = "someUser"
     )
     val authorizationKey = authorizationParser.stringify(someAuthorization)
     val someCaptureAmount = 11.1
@@ -236,7 +237,8 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         currency = someAuthorization.currency,
         amount = someCaptureAmount,
         cardId = someAuthorization.cardId,
-        cardExpiration = someAuthorization.cardExpiration
+        cardExpiration = someAuthorization.cardExpiration,
+        userField = someAuthorization.user
       ) failsOnInvalidMerchant(someErrorMessage)
 
       creditguard.capture(
@@ -258,7 +260,8 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         currency = someAuthorization.currency,
         amount = someCaptureAmount,
         cardId = someAuthorization.cardId,
-        cardExpiration = someAuthorization.cardExpiration
+        cardExpiration = someAuthorization.cardExpiration,
+        userField = someAuthorization.user
       ) returns(
         transactionId = someAuthorization.tranId
       )

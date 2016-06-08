@@ -28,7 +28,8 @@ object CreditguardHelper {
                            currency: String,
                            amount: Double,
                            cardId: String,
-                           cardExpiration: String): AshraitRequest = {
+                           cardExpiration: String,
+                           user: String): AshraitRequest = {
     val doDeal = new DoDealRequest
     doDeal.terminalNumber = terminalNumber
     doDeal.cardId = cardId
@@ -41,6 +42,7 @@ object CreditguardHelper {
     doDeal.validation = Validations.autoComm
     doDeal.authNumber = authNumber
     doDeal.supplierNumber = supplierNumber
+    doDeal.user = user
 
     val request = new Request
     request.command = Commands.doDeal

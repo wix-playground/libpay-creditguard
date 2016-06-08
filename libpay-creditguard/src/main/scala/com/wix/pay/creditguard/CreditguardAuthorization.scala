@@ -4,4 +4,5 @@ case class CreditguardAuthorization(authNumber: String,
                                     currency: String,
                                     tranId: String,
                                     cardId: String,
-                                    cardExpiration: String)
+                                    cardExpiration: String,
+                                    user: String)

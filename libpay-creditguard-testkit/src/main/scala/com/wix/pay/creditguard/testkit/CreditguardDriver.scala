@@ -86,7 +86,8 @@ class CreditguardDriver(port: Int) {
                   currency: String,
                   amount: Double,
                   cardId: String,
-                  cardExpiration: String): RequestCtx = {
+                  cardExpiration: String,
+                  userField: String): RequestCtx = {
     val request = CreditguardHelper.createCaptureRequest(
       terminalNumber = terminalNumber,
       supplierNumber = supplierNumber,
@@ -94,7 +95,8 @@ class CreditguardDriver(port: Int) {
       currency = currency,
       amount = amount,
       cardId = cardId,
-      cardExpiration = cardExpiration
+      cardExpiration = cardExpiration,
+      user = userField
     )
 
     new RequestCtx(

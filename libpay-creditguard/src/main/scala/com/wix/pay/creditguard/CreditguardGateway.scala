@@ -54,7 +54,8 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
         currency = response.response.doDeal.currency,
         tranId = response.response.tranId,
         cardId = response.response.doDeal.cardId,
-        cardExpiration = response.response.doDeal.cardExpiration
+        cardExpiration = response.response.doDeal.cardExpiration,
+        user = response.response.doDeal.user
       )
       authorizationParser.stringify(authorization)
     } match {
@@ -76,7 +77,8 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
         cardExpiration = authorization.cardExpiration,
         authNumber = authorization.authNumber,
         currency = authorization.currency,
-        amount = amount
+        amount = amount,
+        user = authorization.user
       )
 
       val requestXml = RequestParser.stringify(request)
