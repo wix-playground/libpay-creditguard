@@ -95,7 +95,7 @@ object CreditguardHelper {
     doDeal.transactionType = RequestTransactionTypes.debit
     doDeal.total = Conversions.toCreditguardAmount(currencyAmount.amount)
     doDeal.validation = validation
-    doDeal.user = s"$idPrefix${orderId.getOrElse("")}"
+    doDeal.user = s"$idPrefix${orderId.getOrElse("")}".take(DoDealRequest.userFieldLength)
     doDeal.supplierNumber = supplierNumber
 
     val request = new Request

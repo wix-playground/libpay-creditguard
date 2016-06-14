@@ -6,6 +6,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DoDealRequest {
+    /** Maximum length of the 'user' field */
+    public static final int userFieldLength = 19;
+
     /**
      * Terminal number.
      * This is the entity that holds the financial agreement between the merchant and the credit company.
