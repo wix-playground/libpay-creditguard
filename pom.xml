@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>libpay-creditguard-all</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>libpay CreditGuard payment gateway adapeter aggregator</name>
     <description>libpay module for CreditGuard payment gateway</description>
