@@ -171,8 +171,8 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
   private def verifyShvaStatusCode(statusCode: String, errorMessage: String): Unit = {
     statusCode match {
       case StatusCodes.success => // Operation successful.
-      case IsShvaRejectedStatusCode(rejectedStatusCode) => throw new PaymentRejectedException(s"$errorMessage (code = $statusCode)")
-      case _ => throw new PaymentErrorException(s"$errorMessage (code = $statusCode)")
+      case IsShvaRejectedStatusCode(rejectedStatusCode) => throw PaymentRejectedException(s"$errorMessage (code = $statusCode)")
+      case _ => throw PaymentErrorException(s"$errorMessage (code = $statusCode)")
     }
   }
 }
