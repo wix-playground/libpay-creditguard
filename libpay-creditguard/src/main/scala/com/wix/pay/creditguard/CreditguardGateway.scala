@@ -4,7 +4,7 @@ package com.wix.pay.creditguard
 import com.google.api.client.http._
 import com.wix.pay.creditcard.CreditCard
 import com.wix.pay.creditguard.model.Fields
-import com.wix.pay.model.{CurrencyAmount, Customer, Deal}
+import com.wix.pay.model.{Customer, Deal, Payment}
 import com.wix.pay.shva.model.{IsShvaRejectedStatusCode, StatusCodes}
 import com.wix.pay.{PaymentErrorException, PaymentException, PaymentGateway, PaymentRejectedException}
 
@@ -24,8 +24,10 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
                          endpointUrl: String = Endpoints.caspitProduction,
                          merchantParser: CreditguardMerchantParser = new JsonCreditguardMerchantParser,
                          authorizationParser: CreditguardAuthorizationParser = new JsonCreditguardAuthorizationParser) extends PaymentGateway {
-  override def authorize(merchantKey: String, creditCard: CreditCard, currencyAmount: CurrencyAmount, customer: Option[Customer], deal: Option[Deal]): Try[String] = {
+  override def authorize(merchantKey: String, creditCard: CreditCard, payment: Payment, customer: Option[Customer], deal: Option[Deal]): Try[String] = {
     Try {
+      require(payment.installments == 1, "Installments are not implemented yet")
+
       val merchant = merchantParser.parse(merchantKey)
 
       val request = CreditguardHelper.createAuthorizeRequest(
@@ -34,7 +36,7 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
         idPrefix = merchant.idPrefix,
         orderId = deal.map { _.id },
         card = creditCard,
-        currencyAmount = currencyAmount
+        currencyAmount = payment.currencyAmount
       )
 
       val requestXml = RequestParser.stringify(request)
@@ -101,8 +103,10 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
     }
   }
 
-  override def sale(merchantKey: String, creditCard: CreditCard, currencyAmount: CurrencyAmount, customer: Option[Customer], deal: Option[Deal]): Try[String] = {
+  override def sale(merchantKey: String, creditCard: CreditCard, payment: Payment, customer: Option[Customer], deal: Option[Deal]): Try[String] = {
     Try {
+      require(payment.installments == 1, "Installments are not implemented yet")
+
       val merchant = merchantParser.parse(merchantKey)
 
       val request = CreditguardHelper.createSaleRequest(
@@ -111,7 +115,7 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
         idPrefix = merchant.idPrefix,
         orderId = deal.map { _.id },
         card = creditCard,
-        currencyAmount = currencyAmount
+        currencyAmount = payment.currencyAmount
       )
 
       val requestXml = RequestParser.stringify(request)
@@ -171,7 +175,7 @@ class CreditguardGateway(requestFactory: HttpRequestFactory,
   private def verifyShvaStatusCode(statusCode: String, errorMessage: String): Unit = {
     statusCode match {
       case StatusCodes.success => // Operation successful.
-      case IsShvaRejectedStatusCode(rejectedStatusCode) => throw PaymentRejectedException(s"$errorMessage (code = $statusCode)")
+      case IsShvaRejectedStatusCode(rejectedStatusCode) => throw PaymentRejectedException(s"$errorMessage (code = $rejectedStatusCode)")
       case _ => throw PaymentErrorException(s"$errorMessage (code = $statusCode)")
     }
   }

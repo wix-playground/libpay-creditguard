@@ -6,7 +6,7 @@ import com.wix.pay.creditcard.{CreditCard, CreditCardOptionalFields, YearMonth}
 import com.wix.pay.creditguard.CreditguardMatchers._
 import com.wix.pay.creditguard.testkit.CreditguardDriver
 import com.wix.pay.creditguard.{CreditguardAuthorization, CreditguardMerchant, _}
-import com.wix.pay.model.{CurrencyAmount, Deal}
+import com.wix.pay.model.{CurrencyAmount, Deal, Payment}
 import com.wix.pay.{PaymentErrorException, PaymentGateway, PaymentRejectedException}
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
@@ -36,7 +36,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
     )
     val merchantKey = merchantParser.stringify(someMerchant)
 
-    val someCurrencyAmount = CurrencyAmount("ILS", 33.3)
+    val somePayment = Payment(currencyAmount = CurrencyAmount("ILS", 33.3))
     val someCreditCard = CreditCard(
       number = "4012888818888",
       expiration = YearMonth(2020, 12),
@@ -80,13 +80,13 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
-        currencyAmount = someCurrencyAmount
+        currencyAmount = somePayment.currencyAmount
       ) failsOnInvalidMerchant(someErrorMessage)
 
       creditguard.sale(
         merchantKey = merchantKey,
         creditCard = someCreditCard,
-        currencyAmount = someCurrencyAmount,
+        payment = somePayment,
         deal = Some(someDeal)
       ) must beAFailedTry.like {
         case e: PaymentErrorException => e.message must contain(someErrorMessage)
@@ -103,13 +103,13 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
-        currencyAmount = someCurrencyAmount
+        currencyAmount = somePayment.currencyAmount
       ) isRejected(someErrorMessage)
 
       creditguard.sale(
         merchantKey = merchantKey,
         creditCard = someCreditCard,
-        currencyAmount = someCurrencyAmount,
+        payment = somePayment,
         deal = Some(someDeal)
       ) must beAFailedTry.like {
         case e: PaymentRejectedException => e.message must contain(someErrorMessage)
@@ -125,7 +125,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
-        currencyAmount = someCurrencyAmount
+        somePayment.currencyAmount
       ) returns(
         transactionId = someAuthorization.tranId
       )
@@ -133,7 +133,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
       creditguard.sale(
         merchantKey = merchantKey,
         creditCard = someCreditCard,
-        currencyAmount = someCurrencyAmount,
+        payment = somePayment,
         deal = Some(someDeal)
       ) must beASuccessfulTry(
         check = ===(someAuthorization.tranId)
@@ -152,13 +152,13 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
-        currencyAmount = someCurrencyAmount
+        currencyAmount = somePayment.currencyAmount
       ) failsOnInvalidMerchant(someErrorMessage)
 
       creditguard.authorize(
         merchantKey = merchantKey,
         creditCard = someCreditCard,
-        currencyAmount = someCurrencyAmount,
+        payment = somePayment,
         deal = Some(someDeal)
       ) must beAFailedTry.like {
         case e: PaymentErrorException => e.message must contain(someErrorMessage)
@@ -175,13 +175,13 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
-        currencyAmount = someCurrencyAmount
+        somePayment.currencyAmount
       ) isRejected(someErrorMessage)
 
       creditguard.authorize(
         merchantKey = merchantKey,
         creditCard = someCreditCard,
-        currencyAmount = someCurrencyAmount,
+        payment = somePayment,
         deal = Some(someDeal)
       ) must beAFailedTry.like {
         case e: PaymentRejectedException => e.message must contain(someErrorMessage)
@@ -197,7 +197,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         idPrefix = someMerchant.idPrefix,
         orderId = Some(someDeal.id),
         card = someCreditCard,
-        currencyAmount = someCurrencyAmount
+        currencyAmount = somePayment.currencyAmount
       ) returns(
         authNumber = someAuthorization.authNumber,
         cardId = someAuthorization.cardId,
@@ -209,7 +209,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
       creditguard.authorize(
         merchantKey = merchantKey,
         creditCard = someCreditCard,
-        currencyAmount = someCurrencyAmount,
+        payment = somePayment,
         deal = Some(someDeal)
       ) must beASuccessfulTry(
         check = beAuthorizationKey(
