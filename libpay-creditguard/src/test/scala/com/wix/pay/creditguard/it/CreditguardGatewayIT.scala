@@ -104,7 +104,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         orderId = Some(someDeal.id),
         card = someCreditCard,
         currencyAmount = somePayment.currencyAmount
-      ) isRejected(someErrorMessage)
+      ) getsRejected(someErrorMessage)
 
       creditguard.sale(
         merchantKey = merchantKey,
@@ -176,7 +176,7 @@ class CreditguardGatewayIT extends SpecWithJUnit {
         orderId = Some(someDeal.id),
         card = someCreditCard,
         somePayment.currencyAmount
-      ) isRejected(someErrorMessage)
+      ) getsRejected(someErrorMessage)
 
       creditguard.authorize(
         merchantKey = merchantKey,

@@ -1,34 +1,30 @@
 package com.wix.pay.creditguard.testkit
 
-import java.util.{List => JList}
 
+import scala.collection.JavaConversions._
+import scala.collection.mutable
+import java.util.{List => JList}
+import akka.http.scaladsl.model.Uri.Path
+import akka.http.scaladsl.model.{StatusCodes => HttpStatusCodes}
+import akka.http.scaladsl.model._
 import com.google.api.client.http.UrlEncodedParser
-import com.wix.hoopoe.http.testkit.EmbeddedHttpProbe
+import com.wix.e2e.http.api.StubWebServer
+import com.wix.e2e.http.client.extractors.HttpMessageExtractors._
+import com.wix.e2e.http.server.WebServerFactory.aStubWebServer
 import com.wix.pay.creditcard.CreditCard
 import com.wix.pay.creditguard.model._
 import com.wix.pay.creditguard.{CreditguardHelper, RequestParser, ResponseParser}
 import com.wix.pay.model.CurrencyAmount
 import com.wix.pay.shva.model.StatusCodes
-import spray.http.{StatusCodes => HttpStatusCodes, _}
-
-import scala.collection.JavaConversions._
-import scala.collection.mutable
 
 
 class CreditguardDriver(port: Int) {
-  private val probe = new EmbeddedHttpProbe(port, EmbeddedHttpProbe.NotFoundHandler)
+  private val server: StubWebServer = aStubWebServer.onPort(port).build
 
-  def start() {
-    probe.doStart()
-  }
+  def start(): Unit = server.start()
+  def stop(): Unit = server.stop()
+  def reset(): Unit = server.replaceWith()
 
-  def stop() {
-    probe.doStop()
-  }
-
-  def reset() {
-    probe.handlers.clear()
-  }
 
   def aSaleFor(user: String,
                password: String,
@@ -44,14 +40,12 @@ class CreditguardDriver(port: Int) {
       idPrefix = idPrefix,
       orderId = orderId,
       card = card,
-      currencyAmount = currencyAmount
-    )
+      currencyAmount = currencyAmount)
 
     new RequestCtx(
       user = user,
       password = password,
-      request = request
-    )
+      request = request)
   }
 
   def anAuthorizeFor(user: String,
@@ -68,14 +62,12 @@ class CreditguardDriver(port: Int) {
       idPrefix = idPrefix,
       orderId = orderId,
       card = card,
-      currencyAmount = currencyAmount
-    )
+      currencyAmount = currencyAmount)
 
     new RequestCtx(
       user = user,
       password = password,
-      request = request
-    )
+      request = request)
   }
 
   def aCaptureFor(user: String,
@@ -96,14 +88,12 @@ class CreditguardDriver(port: Int) {
       amount = amount,
       cardId = cardId,
       cardExpiration = cardExpiration,
-      user = userField
-    )
+      user = userField)
 
     new RequestCtx(
       user = user,
       password = password,
-      request = request
-    )
+      request = request)
   }
 
   class RequestCtx(user: String, password: String, request: AshraitRequest) {
@@ -157,7 +147,7 @@ class CreditguardDriver(port: Int) {
       returns(ashrait)
     }
 
-    def isRejected(errorMessage: String): Unit = {
+    def getsRejected(errorMessage: String): Unit = {
       val doDeal = new DoDealResponse
       doDeal.status = StatusCodes.rejected
       doDeal.statusText = errorMessage
@@ -174,21 +164,21 @@ class CreditguardDriver(port: Int) {
     private def returns(response: AshraitResponse): Unit = {
       val responseXml = ResponseParser.stringify(response)
 
-      probe.handlers += {
+      server.appendAll {
         case HttpRequest(
-        HttpMethods.POST,
-        Uri.Path("/"),
-        _,
-        entity,
-        _) if isStubbedRequestEntity(entity) =>
-          HttpResponse(
-            status = HttpStatusCodes.OK,
-            entity = HttpEntity(ContentType(MediaTypes.`application/xml`, HttpCharsets.`UTF-8`), responseXml))
+          HttpMethods.POST,
+          Path("/"),
+          _,
+          entity,
+          _) if isStubbedRequestEntity(entity) =>
+            HttpResponse(
+              status = HttpStatusCodes.OK,
+              entity = HttpEntity(ContentType(MediaTypes.`application/xml`, HttpCharsets.`UTF-8`), responseXml))
       }
     }
 
     private def isStubbedRequestEntity(entity: HttpEntity): Boolean = {
-      val requestParams = urlDecode(entity.asString)
+      val requestParams = urlDecode(entity.extractAsString)
 
       requestParams.get(Fields.user).contains(user) &&
         requestParams.get(Fields.password).contains(password) &&
